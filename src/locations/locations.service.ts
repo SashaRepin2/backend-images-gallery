@@ -7,19 +7,15 @@ import { LocationsModel } from "./models/locations.model";
 export class LocationsService {
     constructor(@InjectModel(LocationsModel) private locationsRepository: typeof LocationsModel) {}
 
-    async create(locationDto: CreateLocationDto) {
-        const location = this.locationsRepository.create(locationDto);
-
-        return location;
+    async create(locationDto: CreateLocationDto): Promise<LocationsModel> {
+        return this.locationsRepository.create(locationDto);
     }
 
-    async findAll() {
-        const locations = this.locationsRepository.findAll();
-
-        return locations;
+    async findAll(): Promise<LocationsModel[]> {
+        return this.locationsRepository.findAll();
     }
 
-    async findOne(locationId: number) {
+    async findOne(locationId: number): Promise<LocationsModel> {
         const location = this.locationsRepository.findByPk(locationId);
 
         if (!location) {
@@ -29,12 +25,14 @@ export class LocationsService {
         return location;
     }
 
-    async delete(locationId: number) {
-        const location = this.locationsRepository.destroy({ where: { id: locationId } });
+    async delete(locationId: number): Promise<LocationsModel> {
+        const location = this.locationsRepository.findByPk(locationId);
 
         if (!location) {
             new HttpException("Местоположение не найдено", HttpStatus.BAD_REQUEST);
         }
+
+        this.locationsRepository.destroy({ where: { id: locationId } });
 
         return location;
     }

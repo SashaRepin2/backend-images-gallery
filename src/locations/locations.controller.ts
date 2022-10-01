@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Delete, Param, Body } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Param, Body, UsePipes } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { ValidationPipe } from "src/pipes/validation.pipe";
 import { CreateLocationDto } from "./dto/create-location.dto";
 import { LocationsService } from "./locations.service";
 
 @ApiTags("locations")
+@UsePipes(ValidationPipe)
 @Controller("locations")
 export class LocationsController {
     constructor(private readonly locationsService: LocationsService) {}

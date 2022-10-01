@@ -7,17 +7,15 @@ import { AuthorsModel } from "./models/authors.model";
 export class AuthorsService {
     constructor(@InjectModel(AuthorsModel) private authorsRepository: typeof AuthorsModel) {}
 
-    async create(authorDto: CreateAuthorDto) {
-        const author = this.authorsRepository.create(authorDto);
-
-        return author;
+    async create(authorDto: CreateAuthorDto): Promise<AuthorsModel> {
+        return this.authorsRepository.create(authorDto);
     }
 
-    async findAll() {
+    async findAll(): Promise<AuthorsModel[]> {
         return this.authorsRepository.findAll();
     }
 
-    async findOne(authorId: number) {
+    async findOne(authorId: number): Promise<AuthorsModel> {
         const author = this.authorsRepository.findByPk(authorId);
 
         if (!author) {
@@ -27,12 +25,14 @@ export class AuthorsService {
         return author;
     }
 
-    async delete(authorId: number) {
-        const author = this.authorsRepository.destroy({ where: { id: authorId } });
+    async delete(authorId: number): Promise<AuthorsModel> {
+        const author = this.authorsRepository.findByPk(authorId);
 
         if (!author) {
             new HttpException("Автор не найден", HttpStatus.BAD_REQUEST);
         }
+
+        this.authorsRepository.destroy({ where: { id: authorId } });
 
         return author;
     }

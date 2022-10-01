@@ -7,13 +7,11 @@ import { PaintingsModel } from "./models/paintings.model";
 export class PaintingsService {
     constructor(@InjectModel(PaintingsModel) private paintingsRepository: typeof PaintingsModel) {}
 
-    async create(paintingDto: CreatePaintingDto) {
-        const painting = this.paintingsRepository.create(paintingDto);
-
-        return painting;
+    async create(paintingDto: CreatePaintingDto): Promise<PaintingsModel> {
+        return this.paintingsRepository.create(paintingDto);
     }
 
-    async findOne(paintingId: number) {
+    async findOne(paintingId: number): Promise<PaintingsModel> {
         const painting = this.paintingsRepository.findByPk(paintingId);
 
         if (!painting) {
@@ -23,18 +21,18 @@ export class PaintingsService {
         return painting;
     }
 
-    async findAll() {
-        const paintings = this.paintingsRepository.findAll();
-
-        return paintings;
+    async findAll(): Promise<PaintingsModel[]> {
+        return this.paintingsRepository.findAll();
     }
 
-    async delete(paintingId: number) {
-        const painting = this.paintingsRepository.destroy({ where: { id: paintingId } });
+    async delete(paintingId: number): Promise<PaintingsModel> {
+        const painting = this.paintingsRepository.findByPk(paintingId);
 
         if (!painting) {
             new HttpException("Местоположение не найдено", HttpStatus.BAD_REQUEST);
         }
+
+        this.paintingsRepository.destroy({ where: { id: paintingId } });
 
         return painting;
     }

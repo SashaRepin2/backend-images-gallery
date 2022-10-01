@@ -29,6 +29,16 @@ export class PaintingsModel extends Model<PaintingsModel, CreatePaintingDto> {
     name: string;
 
     @ApiProperty({
+        description: "Год создания",
+        example: "1920",
+    })
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    created: number;
+
+    @ApiProperty({
         description: "Url изображения",
         example:
             "https://cs1.livemaster.ru/storage/f1/4f/9685840e22d80de694c01c1ae5m3--kartiny-i-panno-devyatyj-val-kopiya.jpg",
