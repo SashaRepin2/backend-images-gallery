@@ -1,10 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { AuthorsModel } from "src/authors/models/authors.model";
 import { LocationsModel } from "src/locations/models/locations.model";
 import { CreatePaintingDto } from "../dto/create-painting.dto";
 
-@Table({ tableName: "paintings" })
+@Table({
+    tableName: "paintings",
+    createdAt: false,
+    updatedAt: false,
+})
 export class PaintingsModel extends Model<PaintingsModel, CreatePaintingDto> {
     @ApiProperty({
         example: "1",
@@ -70,4 +74,10 @@ export class PaintingsModel extends Model<PaintingsModel, CreatePaintingDto> {
         allowNull: false,
     })
     locationId: number;
+
+    @BelongsTo(() => AuthorsModel)
+    author: AuthorsModel;
+
+    @BelongsTo(() => LocationsModel)
+    location: LocationsModel;
 }

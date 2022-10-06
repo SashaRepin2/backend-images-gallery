@@ -3,7 +3,11 @@ import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { PaintingsModel } from "src/paintings/models/paintings.model";
 import { CreateAuthorDto } from "../dto/create-author.dto";
 
-@Table({ tableName: "authors" })
+@Table({
+    tableName: "authors",
+    createdAt: false,
+    updatedAt: false,
+})
 export class AuthorsModel extends Model<AuthorsModel, CreateAuthorDto> {
     @ApiProperty({
         example: "1",
