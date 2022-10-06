@@ -37,8 +37,8 @@ export class PaintingsService {
         });
 
         return {
+            count,
             data: rows,
-            countAll: count,
         };
     }
 
@@ -68,10 +68,10 @@ export class PaintingsService {
 
         return {
             data: rows,
-            currPage: page,
-            countAll: count,
-            countPerPage: limit,
-            isNextPage: offset + limit,
+            page,
+            count,
+            limit,
+            isNextPage: offset + limit < count,
             isPrevPage: limit <= offset,
         };
     }
