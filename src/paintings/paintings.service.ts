@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
+import { Op } from "sequelize";
 import { Repository } from "sequelize-typescript";
 import { CreatePaintingDto } from "./dto/create-painting.dto";
 import PaginationPaintingsDto from "./dto/pagination-paintings.dto";
@@ -26,14 +27,19 @@ export class PaintingsService {
     }
 
     async findAll(queryParams: PaginationPaintingsDto): Promise<any> {
-        const { page, limit } = queryParams;
+        const { page, limit, search } = queryParams;
 
         if (page || limit) {
-            return await this.paginationFindAll({ page, limit });
+            return await this.paginationFindAll({ page, limit, search });
         }
 
         const { rows, count } = await this.paintingsRepository.findAndCountAll({
             include: { all: true },
+            where: {
+                name: {
+                    [Op.substring]: search || "",
+                },
+            },
         });
 
         return {
@@ -55,15 +61,22 @@ export class PaintingsService {
     }
 
     private async paginationFindAll(pagParams: PaginationPaintingsDto): Promise<any> {
-        const page = Number(pagParams.page) ?? 1;
-        const limit = Number(pagParams.limit) ?? 10;
+        const page = Number(pagParams.page) || 1;
+        const limit = Number(pagParams.limit) || 10;
+        const search = pagParams.search || "";
 
         const offset = limit * (page - 1);
 
         const { rows, count } = await this.paintingsRepository.findAndCountAll({
             include: { all: true },
-            limit,
+
+            where: {
+                name: {
+                    [Op.substring]: search,
+                },
+            },
             offset,
+            limit,
         });
 
         return {
