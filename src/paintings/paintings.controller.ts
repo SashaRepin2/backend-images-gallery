@@ -9,14 +9,7 @@ import {
     HttpStatus,
     Query,
 } from "@nestjs/common";
-import {
-    ApiOperation,
-    ApiParam,
-    ApiProperty,
-    ApiQuery,
-    ApiResponse,
-    ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ValidationPipe } from "src/pipes/validation.pipe";
 import { CreatePaintingDto } from "./dto/create-painting.dto";
 import PaginationPaintingsDto from "./dto/pagination-paintings.dto";
@@ -40,19 +33,19 @@ export class PaintingsController {
     }
 
     @ApiOperation({ summary: "Получение всех картин" })
-    @ApiParam({
+    @ApiQuery({
         name: "page",
         example: 1,
         description: "номер страницы (>=1).",
         required: false,
     })
-    @ApiParam({
+    @ApiQuery({
         name: "limit",
         example: 5,
         description: "Кол-во получаемых элементов (>=1)",
         required: false,
     })
-    @ApiParam({
+    @ApiQuery({
         name: "query",
         example: 5,
         description: "Ключевое слово, поиск по полю name (painting)",
