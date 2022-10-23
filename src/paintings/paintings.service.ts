@@ -84,8 +84,6 @@ export class PaintingsService {
             page,
             count,
             limit,
-            isNextPage: offset + limit < count,
-            isPrevPage: limit <= offset,
         };
     }
 }

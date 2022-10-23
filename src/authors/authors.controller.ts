@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, UsePipes, HttpStatus } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Body, UsePipes, HttpStatus, Param } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ValidationPipe } from "src/pipes/validation.pipe";
 import { AuthorsService } from "./authors.service";
@@ -45,8 +45,8 @@ export class AuthorsController {
         type: AuthorsModel,
         status: HttpStatus.OK,
     })
-    @Delete()
-    delete() {
-        return this.authorsService.delete(1);
+    @Delete(":id")
+    delete(@Param() id: string) {
+        return this.authorsService.delete(Number(id));
     }
 }
