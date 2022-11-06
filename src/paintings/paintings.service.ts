@@ -6,6 +6,10 @@ import { CreatePaintingDto } from "./dto/create-painting.dto";
 import PaginationPaintingsDto from "./dto/pagination-paintings.dto";
 import { PaintingsModel } from "./models/paintings.model";
 
+interface IDynamicalObj {
+    [key: string]: any;
+}
+
 @Injectable()
 export class PaintingsService {
     constructor(
@@ -27,25 +31,7 @@ export class PaintingsService {
     }
 
     async findAll(queryParams: PaginationPaintingsDto): Promise<any> {
-        const { page, limit, search } = queryParams;
-
-        if (page || limit) {
-            return await this.paginationFindAll({ page, limit, search });
-        }
-
-        const { rows, count } = await this.paintingsRepository.findAndCountAll({
-            include: { all: true },
-            where: {
-                name: {
-                    [Op.substring]: search || "",
-                },
-            },
-        });
-
-        return {
-            count,
-            data: rows,
-        };
+        return await this.paginationFindAll(queryParams);
     }
 
     async delete(paintingId: number): Promise<PaintingsModel> {
@@ -61,29 +47,51 @@ export class PaintingsService {
     }
 
     private async paginationFindAll(pagParams: PaginationPaintingsDto): Promise<any> {
-        const page = Number(pagParams.page) || 1;
-        const limit = Number(pagParams.limit) || 10;
-        const search = pagParams.search || "";
-
-        const offset = limit * (page - 1);
+        const queryStatement = this.getQueryParamsForPainting(pagParams);
 
         const { rows, count } = await this.paintingsRepository.findAndCountAll({
             include: { all: true },
-
-            where: {
-                name: {
-                    [Op.substring]: search,
-                },
-            },
-            offset,
-            limit,
+            ...queryStatement,
         });
 
         return {
             data: rows,
-            page,
             count,
-            limit,
         };
+    }
+
+    private getQueryParamsForPainting(pagParams: PaginationPaintingsDto) {
+        const whereStatement: IDynamicalObj = {};
+
+        if (pagParams.search) {
+            whereStatement.name = { [Op.substring]: pagParams.search };
+        }
+
+        if (pagParams.author) {
+            whereStatement["$author.name$"] = {
+                [Op.like]: `${pagParams.author}%`,
+            };
+        }
+
+        if (pagParams.location) {
+            whereStatement["$location.location$"] = {
+                [Op.substring]: pagParams.location,
+            };
+        }
+
+        if (pagParams.startYear && pagParams.endYear) {
+            whereStatement.created = {
+                [Op.between]: [pagParams.startYear, pagParams.endYear],
+            };
+        }
+
+        const paginationStatement: IDynamicalObj = {};
+
+        if (pagParams.page || pagParams.limit) {
+            paginationStatement.offset = pagParams.limit * (pagParams.page - 1);
+            paginationStatement.page = pagParams.page;
+        }
+
+        return { where: { ...whereStatement }, ...paginationStatement };
     }
 }
