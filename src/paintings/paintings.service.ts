@@ -30,10 +30,6 @@ export class PaintingsService {
         return painting;
     }
 
-    async findAll(queryParams: PaginationPaintingsDto): Promise<any> {
-        return await this.paginationFindAll(queryParams);
-    }
-
     async delete(paintingId: number): Promise<PaintingsModel> {
         const painting = this.paintingsRepository.findByPk(paintingId);
 
@@ -46,8 +42,8 @@ export class PaintingsService {
         return painting;
     }
 
-    private async paginationFindAll(pagParams: PaginationPaintingsDto): Promise<any> {
-        const queryStatement = this.getQueryParamsForPainting(pagParams);
+    async findAll(queryParams: PaginationPaintingsDto): Promise<any> {
+        const queryStatement = this.getQueryParamsForPainting(queryParams);
 
         const { rows, count } = await this.paintingsRepository.findAndCountAll({
             include: { all: true },
@@ -87,9 +83,9 @@ export class PaintingsService {
 
         const paginationStatement: IDynamicalObj = {};
 
-        if (pagParams.page || pagParams.limit) {
-            paginationStatement.offset = pagParams.limit * (pagParams.page - 1);
-            paginationStatement.page = pagParams.page;
+        if (pagParams.page && pagParams.limits) {
+            paginationStatement.offset = Number(pagParams.limits) * (Number(pagParams.page) - 1);
+            paginationStatement.limit = Number(pagParams.limits);
         }
 
         return { where: { ...whereStatement }, ...paginationStatement };

@@ -1,7 +1,7 @@
 export default class PaginationPaintingsDto {
     page?: number;
     search?: string;
-    limit?: number;
+    limits?: number;
     author?: string;
     location?: string;
     startYear?: number;
